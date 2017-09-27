@@ -1,0 +1,12 @@
+i a_is_long123
+f b_is_very_very_long666
+i fffff
+i d
+a_is_long123 = 1
+b_is_very_very_long666 = 2.1
+fffff = 1
+d = 2
+fffff = a_is_long123 + d
+p fffff
+p d
+
