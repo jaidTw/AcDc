@@ -92,43 +92,59 @@ Token scanner( FILE *source )
         if( isdigit(c) )
             return getNumericToken(source, c);
 
-        token.tok[0] = c;
-        token.tok[1] = '\0';
-        if( islower(c) ){
-            if( c == 'f' )
-                token.type = FloatDeclaration;
-            else if( c == 'i' )
-                token.type = IntegerDeclaration;
-            else if( c == 'p' )
-                token.type = PrintOp;
-            else
-                token.type = Alphabet;
-            return token;
+        int len = 0;
+        if( isalnum(c) || c == '_') {
+            do {
+                token.tok[len++] = c;
+                c = fgetc(source);
+            } while(isalnum(c) || c == '_');
+            ungetc(c, source);
+        } else {
+            token.tok[len++] = c;
         }
+        token.tok[len] = '\0';
 
-        switch(c){
-            case '=':
-                token.type = AssignmentOp;
+        if(strlen(token.tok) == 1) {
+            c = token.tok[0];
+            if( islower(c) ){
+                if( c == 'f' )
+                    token.type = FloatDeclaration;
+                else if( c == 'i' )
+                    token.type = IntegerDeclaration;
+                else if( c == 'p' )
+                    token.type = PrintOp;
+                else
+                    token.type = Alphabet;
                 return token;
-            case '+':
-                token.type = PlusOp;
-                return token;
-            case '-':
-                token.type = MinusOp;
-                return token;
-            case '*':
-                token.type = MulOp;
-                return token;
-            case '/':
-                token.type = DivOp;
-                return token;
-            case EOF:
-                token.type = EOFsymbol;
-                token.tok[0] = '\0';
-                return token;
-            default:
-                printf("Invalid character : %c\n", c);
-                exit(1);
+            }
+
+            switch(c){
+                case '=':
+                    token.type = AssignmentOp;
+                    return token;
+                case '+':
+                    token.type = PlusOp;
+                    return token;
+                case '-':
+                    token.type = MinusOp;
+                    return token;
+                case '*':
+                    token.type = MulOp;
+                    return token;
+                case '/':
+                    token.type = DivOp;
+                    return token;
+                case EOF:
+                    token.type = EOFsymbol;
+                    token.tok[0] = '\0';
+                    return token;
+                default:
+                    printf("Invalid character : %c\n", c);
+                    exit(1);
+            }
+        } else {
+            token.type = Alphabet;
+            return token;
         }
     }
 
@@ -174,7 +190,7 @@ Declarations *parseDeclarations( FILE *source )
             return makeDeclarationTree( decl, decls );
         case PrintOp:
         case Alphabet:
-            ungetc(token.tok[0], source);
+            unget_token(source, token);
             return NULL;
         case EOFsymbol:
             return NULL;
@@ -233,7 +249,7 @@ Expression *parseExpressionTail( FILE *source, Expression *lvalue )
             return parseExpressionTail(source, expr);
         case Alphabet:
         case PrintOp:
-            ungetc(token.tok[0], source);
+            unget_token(source, token);
             return lvalue;
         case EOFsymbol:
             return lvalue;
@@ -265,7 +281,7 @@ Expression *parseExpression( FILE *source, Expression *lvalue )
             return parseExpressionTail(source, expr);
         case Alphabet:
         case PrintOp:
-            ungetc(token.tok[0], source);
+            unget_token(source, token);
             return NULL;
         case EOFsymbol:
             return NULL;
@@ -720,4 +736,10 @@ void test_parser( FILE *source )
         stmts = stmts->rest;
     }
 
+}
+
+void unget_token( FILE *source, Token token) {
+    for(int i = strlen(token.tok) - 1; i >= 0; i--) {
+        ungetc(token.tok[i], source);
+    }
 }
