@@ -238,15 +238,17 @@ Expression *parseExpressionTail( FILE *source, Expression *lvalue )
             (expr->v).type = PlusNode;
             (expr->v).val.op = Plus;
             expr->leftOperand = lvalue;
-            expr->rightOperand = parseValue(source);
+            expr->rightOperand = parseTerm(source);
             return parseExpressionTail(source, expr);
         case MinusOp:
             expr = (Expression *)malloc( sizeof(Expression) );
             (expr->v).type = MinusNode;
             (expr->v).val.op = Minus;
             expr->leftOperand = lvalue;
-            expr->rightOperand = parseValue(source);
+            expr->rightOperand = parseTerm(source);
             return parseExpressionTail(source, expr);
+        case MulOp:
+        case DivOp:
         case Alphabet:
         case PrintOp:
             unget_token(source, token);
@@ -259,50 +261,62 @@ Expression *parseExpressionTail( FILE *source, Expression *lvalue )
     }
 }
 
-Expression *parseExpression( FILE *source, Expression *lvalue )
+Expression *parseExpression( FILE *source)
+{
+    Expression *expr = parseTerm(source);
+    return parseExpressionTail(source, expr);
+}
+
+Expression *parseTermTail( FILE *source, Expression *lvalue )
 {
     Token token = scanner(source);
     Expression *expr;
 
     switch(token.type){
+        case MulOp:
+            expr = (Expression *)malloc( sizeof(Expression) );
+            (expr->v).type = MulNode;
+            (expr->v).val.op = Mul;
+            expr->leftOperand = lvalue;
+            expr->rightOperand = parseValue(source);
+            return parseTermTail(source, expr);
+        case DivOp:
+            expr = (Expression *)malloc( sizeof(Expression) );
+            (expr->v).type = DivNode;
+            (expr->v).val.op = Div;
+            expr->leftOperand = lvalue;
+            expr->rightOperand = parseValue(source);
+            return parseTermTail(source, expr);
         case PlusOp:
-            expr = (Expression *)malloc( sizeof(Expression) );
-            (expr->v).type = PlusNode;
-            (expr->v).val.op = Plus;
-            expr->leftOperand = lvalue;
-            expr->rightOperand = parseValue(source);
-            return parseExpressionTail(source, expr);
         case MinusOp:
-            expr = (Expression *)malloc( sizeof(Expression) );
-            (expr->v).type = MinusNode;
-            (expr->v).val.op = Minus;
-            expr->leftOperand = lvalue;
-            expr->rightOperand = parseValue(source);
-            return parseExpressionTail(source, expr);
         case Alphabet:
         case PrintOp:
             unget_token(source, token);
-            return NULL;
+            return lvalue;
         case EOFsymbol:
-            return NULL;
+            return lvalue;
         default:
             printf("Syntax Error: Expect a numeric value or an identifier %s\n", token.tok);
             exit(1);
     }
 }
 
+Expression *parseTerm( FILE *source)
+{
+    Expression *expr = parseValue(source);
+    return parseTermTail(source, expr);
+}
+
 Statement parseStatement( FILE *source, Token token )
 {
     Token next_token;
-    Expression *value, *expr;
 
     switch(token.type){
         case Alphabet:
             next_token = scanner(source);
             if(next_token.type == AssignmentOp){
-                value = parseValue(source);
-                expr = parseExpression(source, value);
-                return makeAssignmentNode(token.tok[0], value, expr);
+                Expression *expr = parseExpression(source);
+                return makeAssignmentNode(token.tok[0], expr);
             }
             else{
                 printf("Syntax Error: Expect an assignment op %s\n", next_token.tok);
@@ -377,17 +391,14 @@ Declarations *makeDeclarationTree( Declaration decl, Declarations *decls )
 }
 
 
-Statement makeAssignmentNode( char id, Expression *v, Expression *expr_tail )
+Statement makeAssignmentNode( char id, Expression *expr_tail )
 {
     Statement stmt;
     AssignmentStatement assign;
 
     stmt.type = Assignment;
     assign.id = id;
-    if(expr_tail == NULL)
-        assign.expr = v;
-    else
-        assign.expr = expr_tail;
+    assign.expr = expr_tail;
     stmt.stmt.assign = assign;
 
     return stmt;
