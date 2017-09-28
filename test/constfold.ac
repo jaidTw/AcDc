@@ -1,5 +1,13 @@
 f a
 f b
+f c
+i d
+f e
+d = 2
 b = 2.0 / 5
 a = 10 + 20 - 5 * 0.4
-p a
+c = a + b
+e = 2.0 + d
+e = d + 2.0
+p c
+p d
