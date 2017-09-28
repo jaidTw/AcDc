@@ -555,6 +555,8 @@ void checkexpression( Expression * expr, SymbolTable * table )
         convertType(left, type);//left->type = type;//converto
         convertType(right, type);//right->type = type;//converto
         expr->type = type;
+
+        constfolding(expr);
     }
 }
 
@@ -587,6 +589,64 @@ void check( Program *program, SymbolTable * table )
     }
 }
 
+void constfolding(Expression *expr) {
+    Expression *left = expr->leftOperand;
+    Expression *right = expr->rightOperand;
+    if((left->v).type == IntConst
+        && (right->v).type == IntConst) {
+        int lhs = (left->v).val.ivalue;
+        int rhs = (right->v).val.ivalue;
+
+        switch((expr->v).type) {
+            case PlusNode: (expr->v).val.ivalue = lhs + rhs; break;
+            case MinusNode: (expr->v).val.ivalue = lhs - rhs; break;
+            case MulNode: (expr->v).val.ivalue = lhs * rhs; break;
+            case DivNode: (expr->v).val.ivalue = lhs / rhs; break;
+            default: printf("ERROR!\n"); break;
+        }
+        (expr->v).type = IntConst;
+    } else if((left->v).type == FloatConst
+        && (right->v).type == IntToFloatConvertNode) {
+        float lhs = (left->v).val.fvalue;
+        int rhs = (right->leftOperand->v).val.ivalue;
+
+        switch((expr->v).type) {
+            case PlusNode: (expr->v).val.fvalue = lhs + rhs; break;
+            case MinusNode: (expr->v).val.fvalue = lhs - rhs; break;
+            case MulNode: (expr->v).val.fvalue = lhs * rhs; break;
+            case DivNode: (expr->v).val.fvalue = lhs / rhs; break;
+            default: printf("ERROR!\n"); break;
+        }
+        (expr->v).type = FloatConst;
+    } else if((left->v).type == IntToFloatConvertNode
+        && (right->v).type == FloatConst) {
+        int lhs = (left->leftOperand->v).val.ivalue;
+        float rhs = (right->v).val.fvalue;
+
+        switch((expr->v).type) {
+            case PlusNode: (expr->v).val.fvalue = lhs + rhs; break;
+            case MinusNode: (expr->v).val.fvalue = lhs - rhs; break;
+            case MulNode: (expr->v).val.fvalue = lhs * rhs; break;
+            case DivNode: (expr->v).val.fvalue = lhs / rhs; break;
+            default: printf("ERROR!\n"); break;
+        }
+        (expr->v).type = FloatConst;
+    } else if((left->v).type == FloatConst
+        && (right->v).type == FloatConst) {
+        float lhs = (left->v).val.fvalue;
+        float rhs = (right->v).val.fvalue;
+
+        switch((expr->v).type) {
+            case PlusNode: (expr->v).val.fvalue = lhs + rhs; break;
+            case MinusNode: (expr->v).val.fvalue = lhs - rhs; break;
+            case MulNode: (expr->v).val.fvalue = lhs * rhs; break;
+            case DivNode: (expr->v).val.fvalue = lhs / rhs; break;
+            default: printf("ERROR!\n"); break;
+        }
+        (expr->v).type = FloatConst;
+    }
+    expr->leftOperand = expr->rightOperand = NULL;
+}
 
 /***********************************************************************
   Code generation
