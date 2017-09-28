@@ -605,6 +605,7 @@ void constfolding(Expression *expr) {
             default: printf("ERROR!\n"); break;
         }
         (expr->v).type = IntConst;
+        expr->leftOperand = expr->rightOperand = NULL;
     } else if((left->v).type == FloatConst
         && (right->v).type == IntToFloatConvertNode) {
         float lhs = (left->v).val.fvalue;
@@ -618,6 +619,7 @@ void constfolding(Expression *expr) {
             default: printf("ERROR!\n"); break;
         }
         (expr->v).type = FloatConst;
+        expr->leftOperand = expr->rightOperand = NULL;
     } else if((left->v).type == IntToFloatConvertNode
         && (right->v).type == FloatConst) {
         int lhs = (left->leftOperand->v).val.ivalue;
@@ -631,6 +633,7 @@ void constfolding(Expression *expr) {
             default: printf("ERROR!\n"); break;
         }
         (expr->v).type = FloatConst;
+        expr->leftOperand = expr->rightOperand = NULL;
     } else if((left->v).type == FloatConst
         && (right->v).type == FloatConst) {
         float lhs = (left->v).val.fvalue;
@@ -644,8 +647,8 @@ void constfolding(Expression *expr) {
             default: printf("ERROR!\n"); break;
         }
         (expr->v).type = FloatConst;
+        expr->leftOperand = expr->rightOperand = NULL;
     }
-    expr->leftOperand = expr->rightOperand = NULL;
 }
 
 /***********************************************************************
