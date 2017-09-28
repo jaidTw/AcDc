@@ -607,7 +607,8 @@ void constfolding(Expression *expr) {
         (expr->v).type = IntConst;
         expr->leftOperand = expr->rightOperand = NULL;
     } else if((left->v).type == FloatConst
-        && (right->v).type == IntToFloatConvertNode) {
+        && (right->v).type == IntToFloatConvertNode
+        && (right->leftOperand->v).type == FloatConst) {
         float lhs = (left->v).val.fvalue;
         int rhs = (right->leftOperand->v).val.ivalue;
 
@@ -621,7 +622,8 @@ void constfolding(Expression *expr) {
         (expr->v).type = FloatConst;
         expr->leftOperand = expr->rightOperand = NULL;
     } else if((left->v).type == IntToFloatConvertNode
-        && (right->v).type == FloatConst) {
+        && (right->v).type == FloatConst
+        && (left->leftOperand->v).type == FloatConst) {
         int lhs = (left->leftOperand->v).val.ivalue;
         float rhs = (right->v).val.fvalue;
 
