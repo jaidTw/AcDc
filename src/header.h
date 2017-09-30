@@ -109,6 +109,7 @@ typedef struct Program{
 /* For building the symbol table */
 typedef struct Symbol{
     DataType type;
+    char reg;
     char id[1025];
 } Symbol;
 
@@ -145,11 +146,12 @@ void checkstmt( Statement *stmt, SymbolTable * table );
 void check( Program *program, SymbolTable * table);
 void constfolding(Expression *expr);
 void fprint_op( FILE *target, ValueType op );
-void fprint_expr( FILE *target, Expression *expr );
-void gencode( Program prog, FILE * target );
+void fprint_expr( FILE *target, Expression *expr, SymbolTable * table );
+void gencode( Program prog, FILE * target, SymbolTable * table );
 
 void print_expr( Expression *expr );
 void test_parser( FILE *source );
 void unget_token( FILE *source, Token token);
 
+char lookup_reg( SymbolTable *table, char *c );
 #endif // HEADER_H_INCLUDED
