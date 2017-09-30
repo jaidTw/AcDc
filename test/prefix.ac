@@ -1,0 +1,12 @@
+f a
+i aa
+f aaa
+
+
+a = 2.5
+aa = 3
+aaa = 5.5 * 10 + a * aa
+
+p a
+p aa
+p aaa

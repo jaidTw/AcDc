@@ -38,7 +38,7 @@ typedef struct Token{
 /* For decl production or say one declaration statement */
 typedef struct Declaration{
     DataType type;
-    char name;
+    char name[1025];
 }Declaration;
 
 /* 
@@ -56,7 +56,7 @@ typedef struct Declarations{
 typedef struct Value{
     ValueType type;
     union{
-        char id;                   /* if the node represent the access of the identifier */
+        char id[1025];                   /* if the node represent the access of the identifier */
         Operation op;              /* store +, -, *, /, =, type_convert */
         int ivalue;                /* for integer constant in the expression */
         float fvalue;              /* for float constant */
@@ -79,7 +79,7 @@ typedef struct Expression{
 
 /* For one assignment statement */
 typedef struct AssignmentStatement{
-    char id;
+    char id[1025];
     Expression *expr;
     DataType type;      /* For type checking to store the type of all expression on the right. */
 }AssignmentStatement;
@@ -89,7 +89,7 @@ typedef struct AssignmentStatement{
 typedef struct Statement{
     StmtType type;
     union{
-        char variable;              /* print statement */
+        char variable[1025];              /* print statement */
         AssignmentStatement assign;
     }stmt;
 }Statement;
@@ -107,8 +107,13 @@ typedef struct Program{
 }Program;
 
 /* For building the symbol table */
+typedef struct Symbol{
+    DataType type;
+    char id[1025];
+} Symbol;
+
 typedef struct SymbolTable{
-    DataType table[26];
+    Symbol table[26];
 } SymbolTable;
 
 
@@ -123,18 +128,18 @@ Expression *parseExpression( FILE *source);
 Expression *parseExpressionTail( FILE *source, Expression *lvalue);
 Expression *parseTerm( FILE *source);
 Expression *parseTermTail( FILE *source, Expression *lvalue);
-Statement makeAssignmentNode( char id, Expression *expr_tail );
-Statement makePrintNode( char id );
+Statement makeAssignmentNode( char *id, Expression *expr_tail );
+Statement makePrintNode( char *id );
 Statements *makeStatementTree( Statement stmt, Statements *stmts );
 Statement parseStatement( FILE *source, Token token );
 Statements *parseStatements( FILE * source );
 Program parser( FILE *source );
 void InitializeTable( SymbolTable *table );
-void add_table( SymbolTable *table, char c, DataType t );
+void add_table( SymbolTable *table, char *c, DataType t );
 SymbolTable build( Program program );
 void convertType( Expression * old, DataType type );
 DataType generalize( Expression *left, Expression *right );
-DataType lookup_table( SymbolTable *table, char c );
+DataType lookup_table( SymbolTable *table, char *c );
 void checkexpression( Expression * expr, SymbolTable * table );
 void checkstmt( Statement *stmt, SymbolTable * table );
 void check( Program *program, SymbolTable * table);
