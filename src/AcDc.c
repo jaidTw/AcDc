@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <ctype.h>
 #include <string.h>
 #include "header.h"
@@ -727,10 +728,10 @@ void fprint_expr( FILE *target, Expression *expr, SymbolTable *table)
                 fprintf(target,"l%c\n",lookup_reg(table, (expr->v).val.id));
                 break;
             case IntConst:
-                fprintf(target,"%d\n",(expr->v).val.ivalue);
+                fprintf(target,"%s%d\n", (expr->v).val.ivalue < 0 ? "_" : "", abs((expr->v).val.ivalue));
                 break;
             case FloatConst:
-                fprintf(target,"%f\n", (expr->v).val.fvalue);
+                fprintf(target,"%s%f\n", (expr->v).val.fvalue < 0 ? "_" : "", fabs((expr->v).val.fvalue));
                 break;
             default:
                 fprintf(target,"Error In fprint_left_expr. (expr->v).type=%d\n",(expr->v).type);
