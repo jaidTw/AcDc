@@ -544,7 +544,7 @@ DataType lookup_table( SymbolTable *table, char *c )
             return table->table[i].type;      
         }
     }
-    printf("Error: identifier %s not found\n", c);
+    printf("Error: identifier %s is not declared\n", c);
     return Notype;
 }
 
@@ -690,11 +690,12 @@ char lookup_reg( SymbolTable *table, char *c )
         if(strcmp(table->table[i].id, c) == 0)
         {
             if(table->table[i].type != Int && table->table[i].type != Float)
-                printf("Error : identifier %s is not declared\n", c);//error
+                printf("Code Gen Error : identifier %s is not declared\n", c);//error
             return table->table[i].reg;      
         }
     }
-    printf("Error: identifier %s not found\n", c);
+    printf("Code Gene Error: identifier %s not declared\n", c);
+    
     return 'a';
 }
 
