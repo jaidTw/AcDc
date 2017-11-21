@@ -4,10 +4,10 @@ You get more information about Dc language from [dc(1)](https://linux.die.net/ma
 
 ## Specification of Ac language
 ### Types
-There's two variable types, integer and float, which is declared by `i` and `f`, each variable has to be declared before their use
+There're two kind of variable types, integer and float, which is declared by `i` and `f`, each variable has to be declared before their use.
 
 ### Reserved words
-There are only three reserved words, `i`, `f`, and `p`, as mentioned above, `i` and `f` are variable declarations, `p` is an opeartion for printing out the content of a variable
+There are only three reserved words, `i`, `f`, and `p`, as mentioned above, `i` and `f` are variable declarations, `p` is an opeartion for printing out the content of a variable.
 
 ### Variable
 Ac accepts variable name's length up to 64 characters, allowed characters including A-Z, a-z, 0-9 and _(underscore),
