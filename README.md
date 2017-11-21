@@ -1,6 +1,6 @@
 # AcDc
 AcDc is a very simple hand-crafted Ac to Dc language compiler, it's an assignment of introductory compiler course in NTU.
-You get more information about Dc language from [dc(1)](https://linux.die.net/man/1/dc)
+You may get more information about Dc language from [dc(1)](https://linux.die.net/man/1/dc)
 
 ## Specification of Ac language
 ### Types
